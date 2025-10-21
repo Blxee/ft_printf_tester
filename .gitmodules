@@ -1,0 +1,6 @@
+[submodule "ft_printf"]
+	path = ft_printf
+	url = git@github.com:Blxee/ft_printf.git
+[submodule "castrum"]
+	path = castrum
+	url = git@github.com:Blxee/castrum.git
