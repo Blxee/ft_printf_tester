@@ -1,6 +1,6 @@
 CC = cc
 LIB_DIR = ft_printf
-CFLAGS = -Wall -Werror -Wextra -g
+CFLAGS = -g
 LDFLAGS = -L$(LIB_DIR) -lftprintf
 NAME = test.out
 SRCS := $(wildcard *.c)
@@ -11,9 +11,9 @@ test: $(NAME)
 
 all: test
 
-$(NAME): $(OBJS)
+$(NAME): test.c $(OBJS)
 	$(MAKE) -C $(LIB_DIR)
-	$(CC) $(LDFLAGS) -o $@ $(OBJS)
+	$(CC) -o $@ $(OBJS) $(LDFLAGS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $^ -o $@
