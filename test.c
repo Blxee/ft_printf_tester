@@ -85,11 +85,11 @@ void test_one_pointer_arg(void)
 
 void test_one_int_arg(void)
 {
-	char *fmts[] = { "hello %d", "hello %+d", "hello % d", "hello %0d", "hello %-d", "hello %.d", "hello %.0d", "hello %5d", "hello %-5d", "hello %05d", "hello %+5d", "hello % 5d", "hello %-+5d", "hello %- 5d", "hello %.3d", "hello %.5d", "hello %.10d", "hello %8.3d", "hello %8.5d", "hello %-8.5d", "hello %+8.5d", "hello % 8.5d", "hello %8.0d", "hello %.0d", "hello %08.0d", "value=%+10.5d end", "x=%- 10.3d y", "%+010.3d middle", "test: [% .5d]", "hello %u", "hello %05u", "hello %-5u", "hello %.5u", "hello %8.5u", "hello %08.5u", };
-	int args[] = {   0,          123,         -123,        42,          -42,         99999,       -99999,       1,           -1,           1000,         -1000,        12,           123,           4567,          -4567,        0,            987654321,     -987654321,    10,            0,              123,            -123,           255,           -255,         40000,          0,                   123,            123,               123,             123,        123,          123,          123,           -123,         2002342, };
+	// char *fmts[] = { "hello %d", "hello %+d", "hello % d", "hello %0d", "hello %-d", "hello %.d", "hello %.0d", "hello %5d", "hello %-5d", "hello %05d", "hello %+5d", "hello % 5d", "hello %-+5d", "hello %- 5d", "hello %.3d", "hello %.5d", "hello %.10d", "hello %8.3d", "hello %8.5d", "hello %-8.5d", "hello %+8.5d", "hello % 8.5d", "hello %8.0d", "hello %.0d", "hello %08.0d", "value=%+10.5d end", "x=%- 10.3d y", "%+010.3d middle", "test: [% .5d]", "hello %u", "hello %05u", "hello %-5u", "hello %.5u", "hello %8.5u", "hello %08.5u", };
+	// int args[] = {   0,          123,         -123,        42,          -42,         99999,       -99999,       1,           -1,           1000,         -1000,        12,           123,           4567,          -4567,        0,            987654321,     -987654321,    10,            0,              123,            -123,           255,           -255,         40000,          0,                   123,            123,               123,             123,        123,          123,          123,           -123,         2002342, };
 
-	// char *fmts[] = {"hello %d", "hello %u", "hello %d", "hello %-12d", "hello %010d", "hello %-010d"};
-	// int args[] = {  123,        123,        -123,       12,            123,           123};
+	char *fmts[] = {"hello %d", "hello %u", "hello %d", "hello %-12d", "hello %010d", "hello %-010d", "hello %+d", "%+d hello"};
+	int args[] = {  123,        123,        -123,       12,            123,           123,            123,         -123};
 	char out[1024], expected[1024];
 	int fd1, fd2;
 	int ret1, ret2;
@@ -99,7 +99,6 @@ void test_one_int_arg(void)
 		// TEST_INFO(fmts[i]);
 		fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		puts(fmts[i]);
 		ret1 = ft_dprintf(fd1, fmts[i], args[i]);
 		ret2 = dprintf(fd2, fmts[i], args[i]);
 		ASSERT_EQ(ret1, ret2);
