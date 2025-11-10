@@ -6,7 +6,7 @@
 /*   By: atahiri- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 08:54:23 by atahiri-          #+#    #+#             */
-/*   Updated: 2025/11/10 08:59:44 by atahiri-         ###   ########.fr       */
+/*   Updated: 2025/11/10 09:19:34 by atahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,24 +24,22 @@ void test_str(void)
 	char *args2[] = {NULL,    NULL,       NULL,       NULL,             NULL,    NULL,       NULL,       NULL,       NULL, "hey",   "",            "hey",         "hey",               "hey",     "hey",        "hey",         NULL,          NULL,   "world",  "somewhere"};
 	char *args3[] = {NULL,    NULL,       NULL,       NULL,             NULL,    NULL,       NULL,       NULL,       NULL, NULL,    NULL,          NULL,          NULL,                NULL,      NULL,         NULL,          NULL,          NULL,   "hey",    "away"};
 	char out[1024], expected[1024];
-	int fd1, fd2;
+	int fds1[2], fds2[2];
 	int ret1, ret2;
 
 	for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
 	{
 		// TEST_INFO(fmts[i]);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		ret1 = ft_dprintf(fd1, fmts[i], args1[i], args2[i], args3[i]);
-		ret2 = dprintf(fd2, fmts[i], args1[i], args2[i], args3[i]);
+		pipe(fds1);
+		pipe(fds2);
+		ret1 = ft_dprintf(fds1[1], fmts[i], args1[i], args2[i], args3[i]);
+		ret2 = dprintf(fds2[1], fmts[i], args1[i], args2[i], args3[i]);
 		ASSERT_EQ(ret1, ret2);
-		close(fd1), close(fd2);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+		close(fds1[1]), close(fds2[1]);
 		bzero(out, 1024), bzero(expected, 1024);
-		ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+		ASSERT_EQ(read(fds1[0], out, 1024), read(fds2[0], expected, 1024));
 		ASSERT_STR_EQ(out, expected);
-		close(fd1), close(fd2);
+		close(fds1[0]), close(fds2[0]);
 	}
 }
 
@@ -50,24 +48,22 @@ void test_str_flags(void)
 	char *fmts[] = { "%+s", "% s", "%-s", "%0s", "%#s", "%10s", "%3s", "%5s", "%0s", "%.10s", "%.3s", "%.5s", "%.0s", "%+ s", "%+-s", "%+0s", "%+#s", "% 0s", "% +s", "% -s", "% #s", "%- s", "%-+s", "%-0s", "%-#s", "%0+s", "%0-s", "%0#s", "%0 s", "%# s", "%#+s", "%#-s", "%#0s", "%+10s", "%-10s", "%010s", "% 10s", "%5.3s", "%5.3s", "%0.3s", "%+.3s", "%#.3s", "% .3s", "%0.0s"};
 	char *arg = "hello";
 	char out[1024], expected[1024];
-	int fd1, fd2;
+	int fds1[2], fds2[2];
 	int ret1, ret2;
 
 	for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
 	{
 		// TEST_INFO(fmts[i]);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		ret1 = ft_dprintf(fd1, fmts[i], arg);
-		ret2 = dprintf(fd2, fmts[i], arg);
+		pipe(fds1);
+		pipe(fds2);
+		ret1 = ft_dprintf(fds1[1], fmts[i], arg);
+		ret2 = dprintf(fds2[1], fmts[i], arg);
 		ASSERT_EQ(ret1, ret2);
-		close(fd1), close(fd2);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+		close(fds1[1]), close(fds2[1]);
 		bzero(out, 1024), bzero(expected, 1024);
-		ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+		ASSERT_EQ(read(fds1[0], out, 1024), read(fds2[0], expected, 1024));
 		ASSERT_STR_EQ(out, expected);
-		close(fd1), close(fd2);
+		close(fds1[0]), close(fds2[0]);
 	}
 }
 
@@ -78,24 +74,22 @@ void test_char(void)
 	char args2[] = {0,          0,          0,			      0,    'B',          'B',          'B',	       'B',          'B',       'B',};
 	char args3[] = {0,          0,          0,			      0,    0,            0,            0,			   0,            'C',       'C',};
 	char out[1024], expected[1024];
-	int fd1, fd2;
+	int fds1[2], fds2[2];
 	int ret1, ret2;
 
 	for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
 	{
 		// TEST_INFO(fmts[i]);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		ret1 = ft_dprintf(fd1, fmts[i], args1[i], args2[i], args3[i]);
-		ret2 = dprintf(fd2, fmts[i], args1[i], args2[i], args3[i]);
+		pipe(fds1);
+		pipe(fds2);
+		ret1 = ft_dprintf(fds1[1], fmts[i], args1[i], args2[i], args3[i]);
+		ret2 = dprintf(fds2[1], fmts[i], args1[i], args2[i], args3[i]);
 		ASSERT_EQ(ret1, ret2);
-		close(fd1), close(fd2);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+		close(fds1[1]), close(fds2[1]);
 		bzero(out, 1024), bzero(expected, 1024);
-		ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+		ASSERT_EQ(read(fds1[0], out, 1024), read(fds2[0], expected, 1024));
 		ASSERT_STR_EQ(out, expected);
-		close(fd1), close(fd2);
+		close(fds1[0]), close(fds2[0]);
 	}
 }
 
@@ -104,24 +98,22 @@ void test_char_flags(void)
 	char *fmts[] = { "%+c", "% c", "%-c", "%0c", "%#c", "%10c", "%3c", "%5c", "%0c", "%.10c", "%.3c", "%.5c", "%.0c", "%+ c", "%+-c", "%+0c", "%+#c", "% 0c", "% +c", "% -c", "% #c", "%- c", "%-+c", "%-0c", "%-#c", "%0+c", "%0-c", "%0#c", "%0 c", "%# c", "%#+c", "%#-c", "%#0c", "%+10c", "%-10c", "%010c", "% 10c", "%5.3c", "%5.3c", "%0.3c", "%+.3c", "%#.3c", "% .3c", "%0.0c"};
 	char arg = 'A';
 	char out[1024], expected[1024];
-	int fd1, fd2;
+	int fds1[2], fds2[2];
 	int ret1, ret2;
 
 	for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
 	{
 		// TEST_INFO(fmts[i]);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		ret1 = ft_dprintf(fd1, fmts[i], arg);
-		ret2 = dprintf(fd2, fmts[i], arg);
+		pipe(fds1);
+		pipe(fds2);
+		ret1 = ft_dprintf(fds1[1], fmts[i], arg);
+		ret2 = dprintf(fds2[1], fmts[i], arg);
 		ASSERT_EQ(ret1, ret2);
-		close(fd1), close(fd2);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+		close(fds1[1]), close(fds2[1]);
 		bzero(out, 1024), bzero(expected, 1024);
-		ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+		ASSERT_EQ(read(fds1[0], out, 1024), read(fds2[0], expected, 1024));
 		ASSERT_STR_EQ(out, expected);
-		close(fd1), close(fd2);
+		close(fds1[0]), close(fds2[0]);
 	}
 }
 
@@ -132,24 +124,22 @@ void test_pointer(void)
 	void *args2[] = {NULL,         NULL,         NULL,         NULL,             NULL,         NULL, NULL,       NULL,       NULL,             NULL,     &(char){'A'}, &(char){'A'},  &(char){'A'},  &(char){'A'},  &(char){'A'}, &(char){'A'},                   &(char){'A'},   &(char){'A'},   &(char){'A'},  NULL,     NULL};
 	void *args3[] = {NULL,         NULL,         NULL,         NULL,             NULL,         NULL, NULL,       NULL,       NULL,             NULL,     NULL,         NULL,          NULL,          NULL,          &(char){'A'}, &(char){'A'},                   &(char){'A'},   &(char){'A'},   &(char){'A'},  NULL,     NULL};
 	char out[1024], expected[1024];
-	int fd1, fd2;
+	int fds1[2], fds2[2];
 	int ret1, ret2;
 
 	for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
 	{
 		// TEST_INFO(fmts[i]);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		ret1 = ft_dprintf(fd1, fmts[i], args1[i], args2[i], args3[i]);
-		ret2 = dprintf(fd2, fmts[i], args1[i], args2[i], args3[i]);
+		pipe(fds1);
+		pipe(fds2);
+		ret1 = ft_dprintf(fds1[1], fmts[i], args1[i], args2[i], args3[i]);
+		ret2 = dprintf(fds2[1], fmts[i], args1[i], args2[i], args3[i]);
 		ASSERT_EQ(ret1, ret2);
-		close(fd1), close(fd2);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+		close(fds1[1]), close(fds2[1]);
 		bzero(out, 1024), bzero(expected, 1024);
-		ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+		ASSERT_EQ(read(fds1[0], out, 1024), read(fds2[0], expected, 1024));
 		ASSERT_STR_EQ(out, expected);
-		close(fd1), close(fd2);
+		close(fds1[0]), close(fds2[0]);
 	}
 }
 
@@ -158,24 +148,22 @@ void test_pointer_flags(void)
 	char *fmts[] = { "%+p", "% p", "%-p", "%0p", "%#p", "%10p", "%3p", "%5p", "%0p", "%.10p", "%.3p", "%.5p", "%.0p", "%+ p", "%+-p", "%+0p", "%+#p", "% 0p", "% +p", "% -p", "% #p", "%- p", "%-+p", "%-0p", "%-#p", "%0+p", "%0-p", "%0#p", "%0 p", "%# p", "%#+p", "%#-p", "%#0p", "%+10p", "%-10p", "%010p", "% 10p", "%5.3p", "%5.3p", "%0.3p", "%+.3p", "%#.3p", "% .3p", "%0.0p"};
 	void *arg = &(int){123};
 	char out[1024], expected[1024];
-	int fd1, fd2;
+	int fds1[2], fds2[2];
 	int ret1, ret2;
 
 	for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
 	{
 		// TEST_INFO(fmts[i]);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		ret1 = ft_dprintf(fd1, fmts[i], arg);
-		ret2 = dprintf(fd2, fmts[i], arg);
+		pipe(fds1);
+		pipe(fds2);
+		ret1 = ft_dprintf(fds1[1], fmts[i], arg);
+		ret2 = dprintf(fds2[1], fmts[i], arg);
 		ASSERT_EQ(ret1, ret2);
-		close(fd1), close(fd2);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+		close(fds1[1]), close(fds2[1]);
 		bzero(out, 1024), bzero(expected, 1024);
-		ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+		ASSERT_EQ(read(fds1[0], out, 1024), read(fds2[0], expected, 1024));
 		ASSERT_STR_EQ(out, expected);
-		close(fd1), close(fd2);
+		close(fds1[0]), close(fds2[0]);
 	}
 }
 
@@ -186,24 +174,22 @@ void test_decimal(void)
 	int args2[] = {0,     0,    0,    0,           0,          0,          0,          0,          0,           0,          0,          0,          0,          0,           0,          0,                0,                0,                0,                0,                -2147483648, 0,             2147483647,    123,                    -123,        -123,       -2147483648,                     0};
 	int args3[] = {0,     0,    0,    0,           0,          0,          0,          0,          0,           0,          0,          0,          0,          0,           0,          0,                0,                0,                0,                0,                0,           0,             0,             0,                      0,           2147483647, 123,                             2147483647};
 	char out[1024], expected[1024];
-	int fd1, fd2;
+	int fds1[2], fds2[2];
 	int ret1, ret2;
 
 	for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
 	{
 		// TEST_INFO(fmts[i]);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		ret1 = ft_dprintf(fd1, fmts[i], args1[i], args2[i], args3[i]);
-		ret2 = dprintf(fd2, fmts[i], args1[i], args2[i], args3[i]);
+		pipe(fds1);
+		pipe(fds2);
+		ret1 = ft_dprintf(fds1[1], fmts[i], args1[i], args2[i], args3[i]);
+		ret2 = dprintf(fds2[1], fmts[i], args1[i], args2[i], args3[i]);
 		ASSERT_EQ(ret1, ret2);
-		close(fd1), close(fd2);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+		close(fds1[1]), close(fds2[1]);
 		bzero(out, 1024), bzero(expected, 1024);
-		ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+		ASSERT_EQ(read(fds1[0], out, 1024), read(fds2[0], expected, 1024));
 		ASSERT_STR_EQ(out, expected);
-		close(fd1), close(fd2);
+		close(fds1[0]), close(fds2[0]);
 	}
 }
 
@@ -212,26 +198,24 @@ void test_decimal_flags(void)
 	char *fmts[] = { "%+d", "% d", "%-d", "%0d", "%#d", "%10d", "%3d", "%5d", "%0d", "%.10d", "%.3d", "%.5d", "%.0d", "%+ d", "%+-d", "%+0d", "%+#d", "% 0d", "% +d", "% -d", "% #d", "%- d", "%-+d", "%-0d", "%-#d", "%0+d", "%0-d", "%0#d", "%0 d", "%# d", "%#+d", "%#-d", "%#0d", "%+10d", "%-10d", "%010d", "% 10d", "%5.3d", "%5.3d", "%0.3d", "%+.3d", "%#.3d", "% .3d", "%0.0d"};
 	int args[] = {0, 123, -123, -2147483648, 2147483647};
 	char out[1024], expected[1024];
-	int fd1, fd2;
+	int fds1[2], fds2[2];
 	int ret1, ret2;
 
 	for (int j = 0; j < sizeof(args) / sizeof(*args); j++)
 	{
 		for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
 		{
-			TEST_INFO(fmts[i]);
-			fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-			fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-			ret1 = ft_dprintf(fd1, fmts[i], args[j]);
-			ret2 = dprintf(fd2, fmts[i], args[j]);
+			// TEST_INFO(fmts[i]);
+			pipe(fds1);
+			pipe(fds2);
+			ret1 = ft_dprintf(fds1[1], fmts[i], args[j], args[j], args[j]);
+			ret2 = dprintf(fds2[1], fmts[i], args[j], args[j], args[j]);
 			ASSERT_EQ(ret1, ret2);
-			close(fd1), close(fd2);
-			fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
-			fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+			close(fds1[1]), close(fds2[1]);
 			bzero(out, 1024), bzero(expected, 1024);
-			ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+			ASSERT_EQ(read(fds1[0], out, 1024), read(fds2[0], expected, 1024));
 			ASSERT_STR_EQ(out, expected);
-			close(fd1), close(fd2);
+			close(fds1[0]), close(fds2[0]);
 		}
 	}
 }
@@ -243,24 +227,22 @@ void test_unsigned(void)
 	int args2[] = {0,     0,    0,    0,           0,          0,          0,          0,          0,           0,          0,          0,          0,          0,           0,          0,                0,                0,                0,                0,                -2147483648, 0,             2147483647,    123,                    -123,        -123,       -2147483648,                     0};
 	int args3[] = {0,     0,    0,    0,           0,          0,          0,          0,          0,           0,          0,          0,          0,          0,           0,          0,                0,                0,                0,                0,                0,           0,             0,             0,                      0,           2147483647, 123,                             2147483647};
 	char out[1024], expected[1024];
-	int fd1, fd2;
+	int fds1[2], fds2[2];
 	int ret1, ret2;
 
 	for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
 	{
 		// TEST_INFO(fmts[i]);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		ret1 = ft_dprintf(fd1, fmts[i], args1[i], args2[i], args3[i]);
-		ret2 = dprintf(fd2, fmts[i], args1[i], args2[i], args3[i]);
+		pipe(fds1);
+		pipe(fds2);
+		ret1 = ft_dprintf(fds1[1], fmts[i], args1[i], args2[i], args3[i]);
+		ret2 = dprintf(fds2[1], fmts[i], args1[i], args2[i], args3[i]);
 		ASSERT_EQ(ret1, ret2);
-		close(fd1), close(fd2);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+		close(fds1[1]), close(fds2[1]);
 		bzero(out, 1024), bzero(expected, 1024);
-		ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+		ASSERT_EQ(read(fds1[0], out, 1024), read(fds2[0], expected, 1024));
 		ASSERT_STR_EQ(out, expected);
-		close(fd1), close(fd2);
+		close(fds1[0]), close(fds2[0]);
 	}
 }
 
@@ -269,26 +251,24 @@ void test_unsigned_flags(void)
 	char *fmts[] = { "%+u", "% u", "%-u", "%0u", "%#u", "%10u", "%3u", "%5u", "%0u", "%.10u", "%.3u", "%.5u", "%.0u", "%+ u", "%+-u", "%+0u", "%+#u", "% 0u", "% +u", "% -u", "% #u", "%- u", "%-+u", "%-0u", "%-#u", "%0+u", "%0-u", "%0#u", "%0 u", "%# u", "%#+u", "%#-u", "%#0u", "%+10u", "%-10u", "%010u", "% 10u", "%5.3u", "%5.3u", "%0.3u", "%+.3u", "%#.3u", "% .3u", "%0.0u"};
 	unsigned int args[] = {0, 123, 4294967295};
 	char out[1024], expected[1024];
-	int fd1, fd2;
+	int fds1[2], fds2[2];
 	int ret1, ret2;
 
 	for (int j = 0; j < sizeof(args) / sizeof(*args); j++)
 	{
 		for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
 		{
-			TEST_INFO(fmts[i]);
-			fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-			fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-			ret1 = ft_dprintf(fd1, fmts[i], args[j]);
-			ret2 = dprintf(fd2, fmts[i], args[j]);
+			// TEST_INFO(fmts[i]);
+			pipe(fds1);
+			pipe(fds2);
+			ret1 = ft_dprintf(fds1[1], fmts[i], args[j], args[j], args[j]);
+			ret2 = dprintf(fds2[1], fmts[i], args[j], args[j], args[j]);
 			ASSERT_EQ(ret1, ret2);
-			close(fd1), close(fd2);
-			fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
-			fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+			close(fds1[1]), close(fds2[1]);
 			bzero(out, 1024), bzero(expected, 1024);
-			ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+			ASSERT_EQ(read(fds1[0], out, 1024), read(fds2[0], expected, 1024));
 			ASSERT_STR_EQ(out, expected);
-			close(fd1), close(fd2);
+			close(fds1[0]), close(fds2[0]);
 		}
 	}
 }
@@ -299,24 +279,22 @@ void test_hex_lower(void) {
 	unsigned int args2[] = {0,    0,    0,   0,          0,          0,          0,                0,       4294967295, -123,   0,      123,        0,          123,                            4294967295,       0,                12399};
 	unsigned int args3[] = {0,    0,    0,   0,          0,          0,          0,                0,       0,          0,      0,      0,          4294967295, 0,                              -123,             123,              10};
 	char out[1024], expected[1024];
-	int fd1, fd2;
+	int fds1[2], fds2[2];
 	int ret1, ret2;
 
 	for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
 	{
 		// TEST_INFO(fmts[i]);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		ret1 = ft_dprintf(fd1, fmts[i], args1[i], args2[i], args3[i]);
-		ret2 = dprintf(fd2, fmts[i], args1[i], args2[i], args3[i]);
+		pipe(fds1);
+		pipe(fds2);
+		ret1 = ft_dprintf(fds1[1], fmts[i], args1[i], args2[i], args3[i]);
+		ret2 = dprintf(fds2[1], fmts[i], args1[i], args2[i], args3[i]);
 		ASSERT_EQ(ret1, ret2);
-		close(fd1), close(fd2);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+		close(fds1[1]), close(fds2[1]);
 		bzero(out, 1024), bzero(expected, 1024);
-		ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+		ASSERT_EQ(read(fds1[0], out, 1024), read(fds2[0], expected, 1024));
 		ASSERT_STR_EQ(out, expected);
-		close(fd1), close(fd2);
+		close(fds1[0]), close(fds2[0]);
 	}
 }
 
@@ -325,26 +303,24 @@ void test_hex_lower_flags(void)
 	char *fmts[] = { "%+x", "% x", "%-x", "%0x", "%#x", "%10x", "%3x", "%5x", "%0x", "%.10x", "%.3x", "%.5x", "%.0x", "%+ x", "%+-x", "%+0x", "%+#x", "% 0x", "% +x", "% -x", "% #x", "%- x", "%-+x", "%-0x", "%-#x", "%0+x", "%0-x", "%0#x", "%0 x", "%# x", "%#+x", "%#-x", "%#0x", "%+10x", "%-10x", "%010x", "% 10x", "%5.3x", "%5.3x", "%0.3x", "%+.3x", "%#.3x", "% .3x", "%0.0x"};
 	unsigned int args[] = {0, 123, 4294967295};
 	char out[1024], expected[1024];
-	int fd1, fd2;
+	int fds1[2], fds2[2];
 	int ret1, ret2;
 
 	for (int j = 0; j < sizeof(args) / sizeof(*args); j++)
 	{
 		for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
 		{
-			TEST_INFO(fmts[i]);
-			fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-			fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-			ret1 = ft_dprintf(fd1, fmts[i], args[j]);
-			ret2 = dprintf(fd2, fmts[i], args[j]);
+			// TEST_INFO(fmts[i]);
+			pipe(fds1);
+			pipe(fds2);
+			ret1 = ft_dprintf(fds1[1], fmts[i], args[j], args[j], args[j]);
+			ret2 = dprintf(fds2[1], fmts[i], args[j], args[j], args[j]);
 			ASSERT_EQ(ret1, ret2);
-			close(fd1), close(fd2);
-			fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
-			fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+			close(fds1[1]), close(fds2[1]);
 			bzero(out, 1024), bzero(expected, 1024);
-			ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+			ASSERT_EQ(read(fds1[0], out, 1024), read(fds2[0], expected, 1024));
 			ASSERT_STR_EQ(out, expected);
-			close(fd1), close(fd2);
+			close(fds1[0]), close(fds2[0]);
 		}
 	}
 }
@@ -356,24 +332,22 @@ void test_hex_upper(void)
 	unsigned int args2[] = {0,    0,    0,   0,          0,          0,          0,                0,       4294967295, -123,   0,      123,        0,          123,                            4294967295,       0,                12399};
 	unsigned int args3[] = {0,    0,    0,   0,          0,          0,          0,                0,       0,          0,      0,      0,          4294967295, 0,                              -123,             123,              10};
 	char out[1024], expected[1024];
-	int fd1, fd2;
+	int fds1[2], fds2[2];
 	int ret1, ret2;
 
 	for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
 	{
 		// TEST_INFO(fmts[i]);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		ret1 = ft_dprintf(fd1, fmts[i], args1[i], args2[i], args3[i]);
-		ret2 = dprintf(fd2, fmts[i], args1[i], args2[i], args3[i]);
+		pipe(fds1);
+		pipe(fds2);
+		ret1 = ft_dprintf(fds1[1], fmts[i], args1[i], args2[i], args3[i]);
+		ret2 = dprintf(fds2[1], fmts[i], args1[i], args2[i], args3[i]);
 		ASSERT_EQ(ret1, ret2);
-		close(fd1), close(fd2);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+		close(fds1[1]), close(fds2[1]);
 		bzero(out, 1024), bzero(expected, 1024);
-		ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+		ASSERT_EQ(read(fds1[0], out, 1024), read(fds2[0], expected, 1024));
 		ASSERT_STR_EQ(out, expected);
-		close(fd1), close(fd2);
+		close(fds1[0]), close(fds2[0]);
 	}
 }
 
@@ -382,26 +356,24 @@ void test_hex_upper_flags(void)
 	char *fmts[] = { "%+X", "% X", "%-X", "%0X", "%#X", "%10X", "%3X", "%5X", "%0X", "%.10X", "%.3X", "%.5X", "%.0X", "%+ X", "%+-X", "%+0X", "%+#X", "% 0X", "% +X", "% -X", "% #X", "%- X", "%-+X", "%-0X", "%-#X", "%0+X", "%0-X", "%0#X", "%0 X", "%# X", "%#+X", "%#-X", "%#0X", "%+10X", "%-10X", "%010X", "% 10X", "%5.3X", "%5.3X", "%0.3X", "%+.3X", "%#.3X", "% .3X", "%0.0X"};
 	unsigned int args[] = {0, 123, 4294967295};
 	char out[1024], expected[1024];
-	int fd1, fd2;
+	int fds1[2], fds2[2];
 	int ret1, ret2;
 
 	for (int j = 0; j < sizeof(args) / sizeof(*args); j++)
 	{
 		for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
 		{
-			TEST_INFO(fmts[i]);
-			fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-			fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-			ret1 = ft_dprintf(fd1, fmts[i], args[j]);
-			ret2 = dprintf(fd2, fmts[i], args[j]);
+			// TEST_INFO(fmts[i]);
+			pipe(fds1);
+			pipe(fds2);
+			ret1 = ft_dprintf(fds1[1], fmts[i], args[j], args[j], args[j]);
+			ret2 = dprintf(fds2[1], fmts[i], args[j], args[j], args[j]);
 			ASSERT_EQ(ret1, ret2);
-			close(fd1), close(fd2);
-			fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
-			fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+			close(fds1[1]), close(fds2[1]);
 			bzero(out, 1024), bzero(expected, 1024);
-			ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+			ASSERT_EQ(read(fds1[0], out, 1024), read(fds2[0], expected, 1024));
 			ASSERT_STR_EQ(out, expected);
-			close(fd1), close(fd2);
+			close(fds1[0]), close(fds2[0]);
 		}
 	}
 }
@@ -410,24 +382,22 @@ void test_percent(void)
 {
 	char *fmts[] = {"%%", "hello %%", "%% hello", "he%%llo", "%%%%", "%% %% %%", "%%%%%%"};
 	char out[1024], expected[1024];
-	int fd1, fd2;
+	int fds1[2], fds2[2];
 	int ret1, ret2;
 
 	for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
 	{
 		// TEST_INFO(fmts[i]);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		ret1 = ft_dprintf(fd1, fmts[i]);
-		ret2 = dprintf(fd2, fmts[i]);
+		pipe(fds1);
+		pipe(fds2);
+		ret1 = ft_dprintf(fds1[1], fmts[i]);
+		ret2 = dprintf(fds2[1], fmts[i]);
 		ASSERT_EQ(ret1, ret2);
-		close(fd1), close(fd2);
-		fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
-		fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+		close(fds1[1]), close(fds2[1]);
 		bzero(out, 1024), bzero(expected, 1024);
-		ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+		ASSERT_EQ(read(fds1[0], out, 1024), read(fds2[0], expected, 1024));
 		ASSERT_STR_EQ(out, expected);
-		close(fd1), close(fd2);
+		close(fds1[0]), close(fds2[0]);
 	}
 }
 
