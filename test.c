@@ -6,7 +6,7 @@
 /*   By: atahiri- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 08:54:23 by atahiri-          #+#    #+#             */
-/*   Updated: 2025/11/09 10:37:08 by atahiri-         ###   ########.fr       */
+/*   Updated: 2025/11/10 08:59:44 by atahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,6 +264,35 @@ void test_unsigned(void)
 	}
 }
 
+void test_unsigned_flags(void)
+{
+	char *fmts[] = { "%+u", "% u", "%-u", "%0u", "%#u", "%10u", "%3u", "%5u", "%0u", "%.10u", "%.3u", "%.5u", "%.0u", "%+ u", "%+-u", "%+0u", "%+#u", "% 0u", "% +u", "% -u", "% #u", "%- u", "%-+u", "%-0u", "%-#u", "%0+u", "%0-u", "%0#u", "%0 u", "%# u", "%#+u", "%#-u", "%#0u", "%+10u", "%-10u", "%010u", "% 10u", "%5.3u", "%5.3u", "%0.3u", "%+.3u", "%#.3u", "% .3u", "%0.0u"};
+	unsigned int args[] = {0, 123, 4294967295};
+	char out[1024], expected[1024];
+	int fd1, fd2;
+	int ret1, ret2;
+
+	for (int j = 0; j < sizeof(args) / sizeof(*args); j++)
+	{
+		for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
+		{
+			TEST_INFO(fmts[i]);
+			fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
+			fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
+			ret1 = ft_dprintf(fd1, fmts[i], args[j]);
+			ret2 = dprintf(fd2, fmts[i], args[j]);
+			ASSERT_EQ(ret1, ret2);
+			close(fd1), close(fd2);
+			fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
+			fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+			bzero(out, 1024), bzero(expected, 1024);
+			ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+			ASSERT_STR_EQ(out, expected);
+			close(fd1), close(fd2);
+		}
+	}
+}
+
 void test_hex_lower(void) {
 	char *fmts[] = {       "%x", "%x", "%x", "%x",       "hello %x", "%x hello", "hello %x world", " %x  ", "%x%x",     "%x%x", "%x%x", "%x%x",     "%x%x%x",   "hello %x from %x far %x away", "%x %x %x hello", "hello %x %x %x", "hel%xll%xo%xoo"};
 	unsigned int args1[] = {123,  -123, 0,   4294967295, 123,        0,          4294967295,       -123,    0,          123,    123,    4294967295, 123,        -123,                           1,                -1,               123};
@@ -288,6 +317,35 @@ void test_hex_lower(void) {
 		ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
 		ASSERT_STR_EQ(out, expected);
 		close(fd1), close(fd2);
+	}
+}
+
+void test_hex_lower_flags(void)
+{
+	char *fmts[] = { "%+x", "% x", "%-x", "%0x", "%#x", "%10x", "%3x", "%5x", "%0x", "%.10x", "%.3x", "%.5x", "%.0x", "%+ x", "%+-x", "%+0x", "%+#x", "% 0x", "% +x", "% -x", "% #x", "%- x", "%-+x", "%-0x", "%-#x", "%0+x", "%0-x", "%0#x", "%0 x", "%# x", "%#+x", "%#-x", "%#0x", "%+10x", "%-10x", "%010x", "% 10x", "%5.3x", "%5.3x", "%0.3x", "%+.3x", "%#.3x", "% .3x", "%0.0x"};
+	unsigned int args[] = {0, 123, 4294967295};
+	char out[1024], expected[1024];
+	int fd1, fd2;
+	int ret1, ret2;
+
+	for (int j = 0; j < sizeof(args) / sizeof(*args); j++)
+	{
+		for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
+		{
+			TEST_INFO(fmts[i]);
+			fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
+			fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
+			ret1 = ft_dprintf(fd1, fmts[i], args[j]);
+			ret2 = dprintf(fd2, fmts[i], args[j]);
+			ASSERT_EQ(ret1, ret2);
+			close(fd1), close(fd2);
+			fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
+			fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+			bzero(out, 1024), bzero(expected, 1024);
+			ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+			ASSERT_STR_EQ(out, expected);
+			close(fd1), close(fd2);
+		}
 	}
 }
 
@@ -316,6 +374,35 @@ void test_hex_upper(void)
 		ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
 		ASSERT_STR_EQ(out, expected);
 		close(fd1), close(fd2);
+	}
+}
+
+void test_hex_upper_flags(void)
+{
+	char *fmts[] = { "%+X", "% X", "%-X", "%0X", "%#X", "%10X", "%3X", "%5X", "%0X", "%.10X", "%.3X", "%.5X", "%.0X", "%+ X", "%+-X", "%+0X", "%+#X", "% 0X", "% +X", "% -X", "% #X", "%- X", "%-+X", "%-0X", "%-#X", "%0+X", "%0-X", "%0#X", "%0 X", "%# X", "%#+X", "%#-X", "%#0X", "%+10X", "%-10X", "%010X", "% 10X", "%5.3X", "%5.3X", "%0.3X", "%+.3X", "%#.3X", "% .3X", "%0.0X"};
+	unsigned int args[] = {0, 123, 4294967295};
+	char out[1024], expected[1024];
+	int fd1, fd2;
+	int ret1, ret2;
+
+	for (int j = 0; j < sizeof(args) / sizeof(*args); j++)
+	{
+		for (int i = 0; i < sizeof(fmts) / sizeof(*fmts); i++)
+		{
+			TEST_INFO(fmts[i]);
+			fd1 = open("/tmp/test_ft_printf1.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
+			fd2 = open("/tmp/test_ft_printf2.txt", O_WRONLY | O_CREAT | O_TRUNC, 0666);
+			ret1 = ft_dprintf(fd1, fmts[i], args[j]);
+			ret2 = dprintf(fd2, fmts[i], args[j]);
+			ASSERT_EQ(ret1, ret2);
+			close(fd1), close(fd2);
+			fd1 = open("/tmp/test_ft_printf1.txt", O_RDONLY);
+			fd2 = open("/tmp/test_ft_printf2.txt", O_RDONLY);
+			bzero(out, 1024), bzero(expected, 1024);
+			ASSERT_EQ(read(fd1, out, 1024), read(fd2, expected, 1024));
+			ASSERT_STR_EQ(out, expected);
+			close(fd1), close(fd2);
+		}
 	}
 }
 
@@ -353,9 +440,12 @@ int main(void)
 	RUN_TEST(test_decimal);
 	RUN_TEST(test_decimal_flags);
 	RUN_TEST(test_unsigned);
+	RUN_TEST(test_unsigned_flags);
 	RUN_TEST(test_pointer);
 	RUN_TEST(test_pointer_flags);
 	RUN_TEST(test_hex_lower);
+	RUN_TEST(test_hex_lower_flags);
 	RUN_TEST(test_hex_upper);
+	RUN_TEST(test_hex_upper_flags);
 	RUN_TEST(test_percent);
 }
