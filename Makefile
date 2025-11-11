@@ -1,5 +1,6 @@
 CC = cc
-LIB_DIR = ft_printf
+LIB_DIR = ./ft_printf
+LIB = $(LIB_DIR)/libftprintf.a
 CFLAGS = -g
 LDFLAGS = -L$(LIB_DIR) -lftprintf
 NAME = test.out
@@ -11,12 +12,14 @@ test: $(NAME)
 
 all: test
 
-$(NAME): test.c $(OBJS)
-	$(MAKE) -C $(LIB_DIR)
+$(NAME): $(OBJS) $(LIB)
 	$(CC) -o $@ $(OBJS) $(LDFLAGS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $^ -o $@
+
+$(LIB):
+	$(MAKE) -C $(LIB_DIR)
 
 clean:
 	$(MAKE) -C $(LIB_DIR) clean

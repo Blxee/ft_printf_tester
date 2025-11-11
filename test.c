@@ -6,16 +6,25 @@
 /*   By: atahiri- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 08:54:23 by atahiri-          #+#    #+#             */
-/*   Updated: 2025/11/10 09:19:34 by atahiri-         ###   ########.fr       */
+/*   Updated: 2025/11/11 11:07:48 by atahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "castrum/castrum.h"
-#include "ft_printf/ft_printf.h"
+#include "ft_printf/include/ft_printf.h"
 #include <stdio.h>
 #include <strings.h>
 #include <unistd.h>
 #include <fcntl.h>
+
+char *yield_next_combo(unsigned int n, char specifier)
+{
+	static const char *const s_flags = "0-+ #";
+	static char str[64];
+
+
+	return (NULL);
+}
 
 void test_str(void)
 {
